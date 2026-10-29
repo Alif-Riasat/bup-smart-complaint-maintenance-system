@@ -1,0 +1,23 @@
+-- Create an administrator with MySQL. The portal will not do this.
+-- Registration only accepts students, faculty, and university officers.
+-- Use the database after:  SOURCE database_schema.sql;
+--
+-- The password below is stored as plain text once. The API hashes it
+-- on the first successful sign-in.
+--
+-- USE bup_maintenance;
+--
+-- INSERT INTO USER (
+--   User_ID_PK, Name, Email, Phone, Password, User_Type, Role_ID_FK,
+--   Student_Or_Employee_ID, Department_Name
+-- ) VALUES (
+--   'user-your-id',
+--   'Your Name',
+--   'you@bup.edu.bd',
+--   '+880 1700-000000',
+--   'choose-a-password',
+--   'admin',
+--   'ROLE-ADM',
+--   'ADM-BUP-002',
+--   'Campus Maintenance Administration'
+-- );

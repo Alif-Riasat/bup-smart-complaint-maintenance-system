@@ -1,0 +1,6 @@
+{
+  "name": "BUP Smart Complaint & Maintenance System",
+  "description": "Centralized digital complaint and campus maintenance management platform for Bangladesh University of Professionals (BUP).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
