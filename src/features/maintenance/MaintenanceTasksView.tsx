@@ -31,6 +31,7 @@ export const MaintenanceTasksView: React.FC<MaintenanceTasksViewProps> = ({
   const [passComplaint, setPassComplaint] = useState<Complaint | null>(null);
   const [passRemarks, setPassRemarks] = useState('');
   const [actionError, setActionError] = useState('');
+  const [boxError, setBoxError] = useState('');
 
   const isMine = (c: Complaint) =>
     currentUser.staffId ? c.assignedStaffId === currentUser.staffId : c.assignedStaffName === currentUser.name;
@@ -64,11 +65,19 @@ export const MaintenanceTasksView: React.FC<MaintenanceTasksViewProps> = ({
     e.stopPropagation();
     setResolvingComplaint(c);
     setResolutionRemarks('');
+    setBoxError('');
   };
+
+  const shortNote = (value: string) => value.trim().length < 8;
 
   const handleSubmitResolve = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!resolvingComplaint || resolutionRemarks.trim().length < 8) return;
+    if (!resolvingComplaint) return;
+    if (shortNote(resolutionRemarks)) {
+      setBoxError('Write at least 8 characters.');
+      return;
+    }
+    setBoxError('');
     setActionError('');
     try {
       await updateStaffProgress(resolvingComplaint.id, 'Resolved', resolutionRemarks.trim());
@@ -80,7 +89,12 @@ export const MaintenanceTasksView: React.FC<MaintenanceTasksViewProps> = ({
 
   const handleSubmitElse = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!elseComplaint || elseRemarks.trim().length < 8) return;
+    if (!elseComplaint) return;
+    if (shortNote(elseRemarks)) {
+      setBoxError('Write at least 8 characters.');
+      return;
+    }
+    setBoxError('');
     try {
       await updateStaffProgress(elseComplaint.id, elseStatus, elseRemarks.trim());
       setElseComplaint(null);
@@ -91,7 +105,12 @@ export const MaintenanceTasksView: React.FC<MaintenanceTasksViewProps> = ({
 
   const handleProgress = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!progressComplaint || progressNote.trim().length < 8) return;
+    if (!progressComplaint) return;
+    if (shortNote(progressNote)) {
+      setBoxError('Write at least 8 characters.');
+      return;
+    }
+    setBoxError('');
     try {
       await sendProgressUpdate(progressComplaint.id, progressNote.trim());
       setProgressComplaint(null);
@@ -187,6 +206,7 @@ export const MaintenanceTasksView: React.FC<MaintenanceTasksViewProps> = ({
                         setElseComplaint(t);
                         setElseRemarks('');
                         setElseStatus('On Hold');
+                        setBoxError('');
                       }}
                       className="px-3.5 py-2 rounded-xl border border-zinc-300 bg-white text-xs font-semibold"
                     >
@@ -196,6 +216,7 @@ export const MaintenanceTasksView: React.FC<MaintenanceTasksViewProps> = ({
                       onClick={(e) => {
                         e.stopPropagation();
                         setActionError('');
+                        setBoxError('');
                         setPassComplaint(t);
                         setPassRemarks('');
                       }}
@@ -208,6 +229,7 @@ export const MaintenanceTasksView: React.FC<MaintenanceTasksViewProps> = ({
                         e.stopPropagation();
                         setProgressComplaint(t);
                         setProgressNote('');
+                        setBoxError('');
                       }}
                       className="px-3.5 py-2 rounded-xl border border-zinc-300 bg-white text-xs font-semibold"
                     >
@@ -271,7 +293,7 @@ export const MaintenanceTasksView: React.FC<MaintenanceTasksViewProps> = ({
               Ticket: <strong className="text-zinc-900">{resolvingComplaint.title}</strong> ({resolvingComplaint.id})
             </p>
 
-            <form onSubmit={handleSubmitResolve} className="space-y-4">
+            <form noValidate onSubmit={handleSubmitResolve} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-zinc-800 mb-1">
                   Resolution notes &amp; actions taken
@@ -280,10 +302,11 @@ export const MaintenanceTasksView: React.FC<MaintenanceTasksViewProps> = ({
                   rows={4}
                   required
                   value={resolutionRemarks}
-                  onChange={(e) => setResolutionRemarks(e.target.value)}
+                  onChange={(e) => { setResolutionRemarks(e.target.value); setBoxError(''); }}
                   placeholder="Describe repair actions (e.g. replaced power breaker, cleared drain blockage, updated router config)..."
                   className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 text-xs text-zinc-900 focus:outline-none focus:border-black"
                 />
+                {boxError && <p className="text-xs text-red-600 mt-1">{boxError}</p>}
               </div>
 
               <div className="flex justify-end gap-2">
@@ -308,13 +331,14 @@ export const MaintenanceTasksView: React.FC<MaintenanceTasksViewProps> = ({
 
       {elseComplaint && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
-          <form onSubmit={handleSubmitElse} className="bg-white rounded-2xl w-full max-w-md p-6 space-y-4 border border-zinc-200">
+          <form noValidate onSubmit={handleSubmitElse} className="bg-white rounded-2xl w-full max-w-md p-6 space-y-4 border border-zinc-200">
             <h3 className="font-bold text-sm">Flag {elseComplaint.id}</h3>
             <select value={elseStatus} onChange={(e) => setElseStatus(e.target.value as 'On Hold' | 'Escalated')} className="w-full border border-zinc-200 rounded-xl px-3 py-2 text-xs">
               <option value="On Hold">On hold</option>
               <option value="Escalated">Escalated to supervisor</option>
             </select>
-            <textarea required minLength={8} rows={4} value={elseRemarks} onChange={(e) => setElseRemarks(e.target.value)} placeholder="Why is this not done yet?" className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 text-xs" />
+            <textarea required rows={4} value={elseRemarks} onChange={(e) => { setElseRemarks(e.target.value); setBoxError(''); }} placeholder="Why is this not done yet?" className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 text-xs" />
+            {boxError && <p className="text-xs text-red-600">{boxError}</p>}
             <div className="flex justify-end gap-2">
               <button type="button" onClick={() => setElseComplaint(null)} className="px-4 py-2 rounded-xl border text-xs">Cancel</button>
               <button type="submit" className="px-4 py-2 rounded-xl bg-black text-white text-xs font-semibold">Save flag</button>
@@ -328,7 +352,11 @@ export const MaintenanceTasksView: React.FC<MaintenanceTasksViewProps> = ({
           <form
             onSubmit={async (event) => {
               event.preventDefault();
-              if (passRemarks.trim().length < 8) return;
+              if (passRemarks.trim().length < 8) {
+                setBoxError('Write at least 8 characters.');
+                return;
+              }
+              setBoxError('');
               setActionError('');
               try {
                 await passToHigherAuthority(passComplaint.id, passRemarks.trim());
@@ -338,6 +366,7 @@ export const MaintenanceTasksView: React.FC<MaintenanceTasksViewProps> = ({
                 setActionError(err.message || 'The complaint could not be passed up.');
               }
             }}
+            noValidate
             className="bg-white rounded-2xl w-full max-w-md p-6 space-y-4 border border-zinc-200"
           >
             <h3 className="font-bold text-sm">Pass {passComplaint.id} to the next authority</h3>
@@ -345,13 +374,13 @@ export const MaintenanceTasksView: React.FC<MaintenanceTasksViewProps> = ({
             {actionError && <p className="text-xs text-red-600">{actionError}</p>}
             <textarea
               required
-              minLength={8}
               rows={4}
               value={passRemarks}
-              onChange={(e) => setPassRemarks(e.target.value)}
+              onChange={(e) => { setPassRemarks(e.target.value); setBoxError(''); }}
               placeholder="This needs a decision from the next office because..."
               className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 text-xs"
             />
+            {boxError && <p className="text-xs text-red-600">{boxError}</p>}
             <div className="flex justify-end gap-2">
               <button type="button" onClick={() => setPassComplaint(null)} className="px-4 py-2 rounded-xl border text-xs">Cancel</button>
               <button type="submit" className="px-4 py-2 rounded-xl bg-black text-white text-xs font-semibold">Pass up</button>
@@ -362,10 +391,11 @@ export const MaintenanceTasksView: React.FC<MaintenanceTasksViewProps> = ({
 
       {progressComplaint && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
-          <form onSubmit={handleProgress} className="bg-white rounded-2xl w-full max-w-md p-6 space-y-4 border border-zinc-200">
+          <form noValidate onSubmit={handleProgress} className="bg-white rounded-2xl w-full max-w-md p-6 space-y-4 border border-zinc-200">
             <h3 className="font-bold text-sm">Notify progress for {progressComplaint.id}</h3>
             <p className="text-xs text-zinc-500">The person who filed this complaint and the administrator both receive this note.</p>
-            <textarea required minLength={8} rows={4} value={progressNote} onChange={(e) => setProgressNote(e.target.value)} placeholder="What has been done so far?" className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 text-xs" />
+            <textarea required rows={4} value={progressNote} onChange={(e) => { setProgressNote(e.target.value); setBoxError(''); }} placeholder="What has been done so far?" className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 text-xs" />
+            {boxError && <p className="text-xs text-red-600">{boxError}</p>}
             <div className="flex justify-end gap-2">
               <button type="button" onClick={() => setProgressComplaint(null)} className="px-4 py-2 rounded-xl border text-xs">Cancel</button>
               <button type="submit" className="px-4 py-2 rounded-xl bg-black text-white text-xs font-semibold">Send update</button>

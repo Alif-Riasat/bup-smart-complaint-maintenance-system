@@ -59,6 +59,7 @@ export const CampusMapView: React.FC<CampusMapViewProps> = ({
 }) => {
   const { complaints, categories, currentUser } = useApp();
   const canFileComplaint = currentUser.role === 'student' || currentUser.role === 'faculty';
+  const showHotspotTools = currentUser.role === 'admin' || currentUser.role === 'authority' || currentUser.role === 'maintenance';
 
   const [selectedBuildingId, setSelectedBuildingId] = useState<string>('acad');
   const [filterCategory, setFilterCategory] = useState<string>('All');
@@ -364,7 +365,7 @@ export const CampusMapView: React.FC<CampusMapViewProps> = ({
       </div>
 
       {/* 2. Key Problem Banner (Pinpointing #1 Most Problematic Area) */}
-      {topProblemBuilding && topProblemBuilding.complaintCount > 0 && (
+      {showHotspotTools && topProblemBuilding && topProblemBuilding.complaintCount > 0 && (
         <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-red-500 via-rose-500 to-orange-500 text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-start sm:items-center gap-3.5">
             <div className="w-11 h-11 rounded-2xl bg-white/20 backdrop-blur-xs flex items-center justify-center shrink-0 border border-white/30">
@@ -400,7 +401,7 @@ export const CampusMapView: React.FC<CampusMapViewProps> = ({
       )}
 
       {/* 3. Filter Bar */}
-      <div className="p-4 rounded-2xl bg-white border border-zinc-200 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
+      {showHotspotTools && <div className="p-4 rounded-2xl bg-white border border-zinc-200 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-1.5 text-zinc-500 font-semibold">
             <Filter className="w-3.5 h-3.5" />
@@ -455,7 +456,7 @@ export const CampusMapView: React.FC<CampusMapViewProps> = ({
             <span>Clear</span>
           </span>
         </div>
-      </div>
+      </div>}
 
       {/* 4. MAIN INTERACTIVE MAP & INSPECTION LAYOUT */}
       {viewMode === 'map' ? (

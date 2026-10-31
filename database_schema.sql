@@ -262,7 +262,8 @@ INSERT INTO DEPARTMENT (Department_ID_PK, Department_Name, Contact_Info, Head_Na
 ('dept-harassment', 'Harassment Resolution Desk', '+880 1769-028477', 'Ayesha Akter', 'harassment.desk@bup.edu.bd'),
 ('dept-drug', 'Drug Prevention Desk', '+880 1769-021850', 'Kamrul Hasan', 'drug.prevention@bup.edu.bd'),
 ('dept-security-control', 'Security Control', '+880 1769-028787', 'Hasan Hafiz', 'security.control@bup.edu.bd'),
-('dept-misc', 'Miscellaneous Complaints', '+880 1769-028797', 'Minhaz Chowdhury', 'misc.complaints@bup.edu.bd');
+('dept-misc', 'Miscellaneous Complaints', '+880 1769-028797', 'Minhaz Chowdhury', 'misc.complaints@bup.edu.bd'),
+('dept-canteen', 'Canteen and Food Services', '+880 1700-110505', 'Abul Hannan', 'canteen.food@bup.edu.bd');
 
 -- Insert Maintenance Staff
 INSERT INTO MAINTENANCE_STAFF (Staff_ID_PK, Name, Email, Phone, Department_ID_FK, Specialization, Active_Tasks) VALUES
@@ -274,7 +275,8 @@ INSERT INTO MAINTENANCE_STAFF (Staff_ID_PK, Name, Email, Phone, Department_ID_FK
 ('staff-ayesha', 'Ayesha Akter', 'ayesha.harassment@bup.edu.bd', '+880 1700-110501', 'dept-harassment', 'Harassment Resolution Desk', 0),
 ('staff-kamrul', 'Kamrul Hasan', 'kamrul.drug@bup.edu.bd', '+880 1700-110502', 'dept-drug', 'Drug Prevention Desk', 0),
 ('staff-hasan', 'Hasan Hafiz', 'hasan.security@bup.edu.bd', '+880 1700-110503', 'dept-security-control', 'Security Control', 0),
-('staff-minhaz', 'Minhaz Chowdhury', 'minhaz.misc@bup.edu.bd', '+880 1700-110504', 'dept-misc', 'Miscellaneous Complaint Handler', 0);
+('staff-minhaz', 'Minhaz Chowdhury', 'minhaz.misc@bup.edu.bd', '+880 1700-110504', 'dept-misc', 'Miscellaneous Complaint Handler', 0),
+('staff-canteen', 'Abul Hannan', 'canteen.food@bup.edu.bd', '+880 1700-110505', 'dept-canteen', 'Canteen and food complaints', 0);
 
 -- Insert Users (Including red-flagged spammer test student)
 INSERT INTO USER (User_ID_PK, Name, Email, Phone, Password, User_Type, Role_ID_FK, Student_Or_Employee_ID, Department_Name, Is_Flagged_Spammer, Flag_Reason, Flagged_Date) VALUES
@@ -288,6 +290,7 @@ INSERT INTO USER (User_ID_PK, Name, Email, Phone, Password, User_Type, Role_ID_F
 ('user-kamrul', 'Kamrul Hasan', 'kamrul.drug@bup.edu.bd', '+880 1700-110502', '123456', 'staff', 'ROLE-MNT', 'STF-DRG-502', 'Drug Prevention Desk', FALSE, NULL, NULL),
 ('user-hasan', 'Hasan Hafiz', 'hasan.security@bup.edu.bd', '+880 1700-110503', '123456', 'staff', 'ROLE-MNT', 'STF-SEC-503', 'Security Control', FALSE, NULL, NULL),
 ('user-minhaz', 'Minhaz Chowdhury', 'minhaz.misc@bup.edu.bd', '+880 1700-110504', '123456', 'staff', 'ROLE-MNT', 'STF-MSC-504', 'Miscellaneous Complaints', FALSE, NULL, NULL),
+('user-canteen', 'Abul Hannan', 'canteen.food@bup.edu.bd', '+880 1700-110505', '123456', 'staff', 'ROLE-MNT', 'STF-CAN-505', 'Canteen and Food Services', FALSE, NULL, NULL),
 ('user-spammer', 'Tanzim Ahmed (Spam Test)', 'tanzim.spam@bup.edu.bd', '+880 1799-112233', '123456', 'student', 'ROLE-STU', '24549010999', 'Dept of BBA, FBS', TRUE, 'Red-flagged: Submitted 5 repetitive non-issues within 10 minutes (Anti-Spam Rule)', '2026-10-12 14:20:00');
 
 -- Insert Complaint Categories
@@ -302,7 +305,7 @@ INSERT INTO COMPLAINT_CATEGORY (Category_ID_PK, Category_Name, Description) VALU
 ('cat-medical', 'Medical', 'Medical Center service, first aid, or campus health-facility issues'),
 ('cat-library', 'Library', 'Library rooms, furniture, lighting, and access problems'),
 ('cat-classroom', 'Classroom', 'Teaching rooms, boards, furniture, and classroom utilities'),
-('cat-canteen', 'Canteen', 'Canteen, cafe, and food-court facility problems'),
+('cat-canteen', 'Canteen', 'Food, hygiene, and canteen facility problems'),
 ('cat-office', 'Office', 'Department offices, reception, and administrative rooms'),
 ('cat-harassment', 'Harassment', 'Sexual harassment or other harassment on campus'),
 ('cat-drug', 'Drug abuse', 'Suspected drug use, possession, or sale on campus'),
@@ -373,7 +376,7 @@ INSERT INTO EMERGENCY_CONTACTS (Contact_ID_PK, Category, Name, Designation, Cont
 ('emg-imp1', 'Important Contacts', 'Information Desk', 'General Enquiries', '+8802-8000368', NULL, NULL, NULL),
 ('emg-imp2', 'Important Contacts', 'Army', 'PABX Line', '3137', NULL, NULL, NULL),
 ('emg-imp3', 'Important Contacts', 'Fax', 'Campus Fax', '02-8000443', NULL, NULL, NULL),
-('emg-imp4', 'Important Contacts', 'Security Control Room', 'Campus Security Wing', '+8801769-028787', NULL, 'chief.security@bup.edu.bd', NULL),
+('emg-imp4', 'Important Contacts', 'Security Control Room', 'Campus Security Wing', '+8809666790799', NULL, 'chief.security@bup.edu.bd', NULL),
 ('emg-imp5', 'Important Contacts', 'Medical Centre', 'Medical Centre', '+8801769-021999', NULL, NULL, NULL),
 ('emg-imp6', 'Important Contacts', 'Sexual Harassment Complaint Committee', 'President Office', '+8801769-028477', NULL, NULL, NULL),
 ('emg-imp7', 'Important Contacts', 'Drug Abuse Prevention Committee', 'President Office', '+8801769-021850', NULL, NULL, NULL),

@@ -42,6 +42,7 @@ export const ComplaintDetailModal: React.FC<ComplaintDetailModalProps> = ({
   const { complaints, statusHistory, submitFeedback, requestFollowUp, currentUser, availableUsers } = useApp();
   const [rating, setRating] = useState<number>(5);
   const [feedbackComment, setFeedbackComment] = useState('');
+  const [feedbackError, setFeedbackError] = useState('');
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
   const [followUpNote, setFollowUpNote] = useState('');
@@ -71,10 +72,19 @@ export const ComplaintDetailModal: React.FC<ComplaintDetailModalProps> = ({
     setTimeout(() => setCopiedId(false), 2000);
   };
 
-  const handleFeedbackSubmit = (e: React.FormEvent) => {
+  const handleFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    submitFeedback(complaint.id, rating, feedbackComment);
-    setFeedbackSubmitted(true);
+    if (feedbackComment.trim().length < 8) {
+      setFeedbackError('Write at least 8 characters.');
+      return;
+    }
+    setFeedbackError('');
+    try {
+      await submitFeedback(complaint.id, rating, feedbackComment.trim());
+      setFeedbackSubmitted(true);
+    } catch (err: any) {
+      setFeedbackError(err.message || 'Write at least 8 characters.');
+    }
   };
 
   const handlePrint = () => {
@@ -339,10 +349,15 @@ export const ComplaintDetailModal: React.FC<ComplaintDetailModalProps> = ({
               <h4 className="text-xs font-bold text-zinc-800 uppercase tracking-wider">Request a follow-up</h4>
               {complaint.canFollowUp ? (
                 <form
+                  noValidate
                   className="space-y-3"
                   onSubmit={async (event) => {
                     event.preventDefault();
                     setFollowUpError('');
+                    if (followUpNote.trim().length < 8) {
+                      setFollowUpError('Write at least 8 characters.');
+                      return;
+                    }
                     try {
                       await requestFollowUp(complaint.id, followUpNote.trim());
                       setFollowUpSent(true);
@@ -355,7 +370,7 @@ export const ComplaintDetailModal: React.FC<ComplaintDetailModalProps> = ({
                   <p className="text-xs text-zinc-600">This complaint is past the waiting period for its priority. Tell the officer what still needs attention.</p>
                   <textarea
                     value={followUpNote}
-                    onChange={(e) => setFollowUpNote(e.target.value)}
+                    onChange={(e) => { setFollowUpNote(e.target.value); setFollowUpError(''); }}
                     rows={3}
                     className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 text-xs"
                     placeholder="The repair has not started and the room is still unusable."
@@ -396,7 +411,7 @@ export const ComplaintDetailModal: React.FC<ComplaintDetailModalProps> = ({
                   </span>
                 </div>
               ) : (
-                <form onSubmit={handleFeedbackSubmit} className="space-y-3.5">
+                <form noValidate onSubmit={handleFeedbackSubmit} className="space-y-3.5">
                   <p className="text-xs text-zinc-600">
                     How satisfied are you with the resolution of this issue?
                   </p>
@@ -426,10 +441,11 @@ export const ComplaintDetailModal: React.FC<ComplaintDetailModalProps> = ({
                   <input
                     type="text"
                     value={feedbackComment}
-                    onChange={(e) => setFeedbackComment(e.target.value)}
-                    placeholder="Optional feedback comment for the facilities administration..."
+                    onChange={(e) => { setFeedbackComment(e.target.value); setFeedbackError(''); }}
+                    placeholder="Tell the facilities office what went well or what still needs work"
                     className="w-full bg-white border border-zinc-200 rounded-xl px-4 py-2.5 text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-black transition-colors"
                   />
+                  {feedbackError && <p className="text-xs text-red-600">{feedbackError}</p>}
 
                   <button
                     type="submit"

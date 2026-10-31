@@ -138,6 +138,32 @@ export function escalationTarget(categoryId, level, currentStaffId) {
   return { staffId: topId, level: 2 };
 }
 
+export async function ensureCanteenOfficer(pool) {
+  await pool.query(
+    `INSERT IGNORE INTO DEPARTMENT (Department_ID_PK, Department_Name, Contact_Info, Head_Name, Email)
+     VALUES ('dept-canteen', 'Canteen and Food Services', '+880 1700-110505', 'Abul Hannan', 'canteen.food@bup.edu.bd')`
+  );
+  await pool.query(
+    `UPDATE DEPARTMENT SET Head_Name = 'Abul Hannan' WHERE Department_ID_PK = 'dept-canteen'`
+  );
+  await pool.query(
+    `INSERT IGNORE INTO MAINTENANCE_STAFF
+      (Staff_ID_PK, Name, Email, Phone, Department_ID_FK, Specialization, Active_Tasks)
+     VALUES ('staff-canteen', 'Abul Hannan', 'canteen.food@bup.edu.bd', '+880 1700-110505', 'dept-canteen', 'Canteen and food complaints', 0)`
+  );
+  await pool.query(
+    `UPDATE MAINTENANCE_STAFF SET Name = 'Abul Hannan' WHERE Staff_ID_PK = 'staff-canteen'`
+  );
+  await pool.query(
+    `INSERT IGNORE INTO USER
+      (User_ID_PK, Name, Email, Phone, Password, User_Type, Role_ID_FK, Student_Or_Employee_ID, Department_Name, Is_Flagged_Spammer)
+     VALUES ('user-canteen', 'Abul Hannan', 'canteen.food@bup.edu.bd', '+880 1700-110505', '123456', 'staff', 'ROLE-MNT', 'STF-CAN-505', 'Canteen and Food Services', FALSE)`
+  );
+  await pool.query(
+    `UPDATE USER SET Name = 'Abul Hannan' WHERE User_ID_PK = 'user-canteen'`
+  );
+}
+
 export async function ensureAuthorityRecords(pool) {
   for (const office of ALL_AUTHORITIES) {
     await pool.query(

@@ -121,7 +121,7 @@ export const BUP_EMERGENCY_CONTACTS: EmergencyContactItem[] = [
     category: 'Important Contacts',
     name: 'Security Control Room',
     designation: '24/7 Security & Surveillance Proctor Office',
-    contactNumber: '+8801769-028787',
+    contactNumber: '+8809666790799',
     email: 'chief.security@bup.edu.bd',
   },
   {

@@ -37,6 +37,7 @@ export const AdminComplaintTriageModal: React.FC<AdminComplaintTriageModalProps>
   
   const [isRejecting, setIsRejecting] = useState(false);
   const [rejectionReason, setRejectionReason] = useState('');
+  const [rejectError, setRejectError] = useState('');
 
   if (!complaint) return null;
 
@@ -49,13 +50,20 @@ export const AdminComplaintTriageModal: React.FC<AdminComplaintTriageModalProps>
     onClose();
   };
 
-  const handleReject = (e: React.FormEvent) => {
+  const handleReject = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!rejectionReason.trim()) return;
-
-    rejectComplaint(complaint.id, rejectionReason.trim());
-    onSuccess();
-    onClose();
+    if (rejectionReason.trim().length < 8) {
+      setRejectError('Write at least 8 characters.');
+      return;
+    }
+    setRejectError('');
+    try {
+      await rejectComplaint(complaint.id, rejectionReason.trim());
+      onSuccess();
+      onClose();
+    } catch (err: any) {
+      setRejectError(err.message || 'Write at least 8 characters.');
+    }
   };
 
   const handleCloseVerified = () => {
@@ -251,7 +259,7 @@ export const AdminComplaintTriageModal: React.FC<AdminComplaintTriageModalProps>
               </div>
             </form>
           ) : (
-            <form onSubmit={handleReject} className="space-y-4 bg-red-50/70 border border-red-200 p-5 rounded-2xl">
+            <form noValidate onSubmit={handleReject} className="space-y-4 bg-red-50/70 border border-red-200 p-5 rounded-2xl">
               <div className="flex items-center gap-2 text-red-700 font-bold text-xs uppercase tracking-wider">
                 <AlertTriangle className="w-4 h-4 text-red-600" />
                 <span>Formal Complaint Rejection</span>
@@ -268,10 +276,11 @@ export const AdminComplaintTriageModal: React.FC<AdminComplaintTriageModalProps>
                   rows={3}
                   required
                   value={rejectionReason}
-                  onChange={(e) => setRejectionReason(e.target.value)}
+                  onChange={(e) => { setRejectionReason(e.target.value); setRejectError(''); }}
                   placeholder="e.g. Outside campus maintenance jurisdiction; duplicate report; equipment scheduled for university decommissioning..."
                   className="w-full bg-white border border-red-200 rounded-xl p-3 text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-red-500"
                 />
+                {rejectError && <p className="text-xs text-red-600 mt-1">{rejectError}</p>}
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-1">

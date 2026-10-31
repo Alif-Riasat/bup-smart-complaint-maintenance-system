@@ -12,6 +12,7 @@ import {
   SECTION_AUTHORITIES,
   escalationTarget,
   ensureAuthorityRecords,
+  ensureCanteenOfficer,
   normalizeCampusLocations,
 } from './catalog.js';
 
@@ -34,7 +35,7 @@ const CATEGORY_DEPT = {
   'cat-medical': 'dept-staff-medical',
   'cat-library': 'dept-staff-library',
   'cat-classroom': 'dept-estate',
-  'cat-canteen': 'dept-estate',
+  'cat-canteen': 'dept-canteen',
   'cat-office': 'dept-estate',
   'cat-other': 'dept-misc',
   'cat-harassment': 'dept-harassment',
@@ -52,6 +53,7 @@ const CATEGORY_STAFF = {
   'cat-violation': 'staff-hasan',
   'cat-ragging': 'staff-hasan',
   'cat-other': 'staff-minhaz',
+  'cat-canteen': 'staff-canteen',
   'cat-medical': 'staff-medical',
   'cat-library': 'staff-library',
   'cat-classroom': 'staff-academic',
@@ -971,7 +973,7 @@ app.post('/api/complaints/:id/follow-up', auth, async (req, res) => {
     const complaintId = req.params.id;
     const note = String(req.body.note || '').trim();
     if (note.length < 8) {
-      return res.status(400).json({ message: 'Add a short note explaining what still needs attention.' });
+      return res.status(400).json({ message: 'Write at least 8 characters.' });
     }
     const rows = await complaintRows();
     const row = rows.find((item) => item.Complaint_ID_PK === complaintId);
@@ -1253,6 +1255,9 @@ app.post('/api/complaints/:id/feedback', auth, async (req, res) => {
     const comment = String(req.body.comment || '').trim();
     if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
       return res.status(400).json({ message: 'Choose a rating from 1 to 5.' });
+    }
+    if (comment.length < 8) {
+      return res.status(400).json({ message: 'Write at least 8 characters.' });
     }
     const rows = await complaintRows();
     const row = rows.find((item) => item.Complaint_ID_PK === req.params.id);
@@ -1602,6 +1607,7 @@ async function boot() {
       );
     }
     await ensureAuthorityRecords(pool);
+    await ensureCanteenOfficer(pool);
     await normalizeCampusLocations(pool);
     dbReady = true;
     await watchSla().catch((error) => console.error('SLA check skipped:', error.message));

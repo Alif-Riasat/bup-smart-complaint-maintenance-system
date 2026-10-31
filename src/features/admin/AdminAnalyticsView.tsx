@@ -292,7 +292,7 @@ export const AdminAnalyticsView: React.FC = () => {
                   <td className="px-6 py-4 text-zinc-600">{staff.departmentName}</td>
                   <td className="px-6 py-4 text-zinc-500">{staff.specialization}</td>
                   <td className="px-6 py-4 font-bold text-zinc-900">
-                    <span className="px-2.5 py-1 rounded-full bg-zinc-100 text-zinc-800 border border-zinc-200 font-mono text-[11px]">
+                    <span className="inline-flex whitespace-nowrap px-2.5 py-1 rounded-full bg-zinc-100 text-zinc-800 border border-zinc-200 font-mono text-[11px]">
                       {staff.activeTasksCount} active task{staff.activeTasksCount === 1 ? '' : 's'}
                     </span>
                   </td>

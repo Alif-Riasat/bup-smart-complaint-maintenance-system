@@ -39,7 +39,7 @@ export const PAGE_ROUTES: PageRoute[] = [
     nav: 'campus-map',
     title: 'Campus map',
     description: 'See maintenance complaints by building on the BUP campus.',
-    access: 'community',
+    access: 'any',
   },
   {
     path: '/notifications',

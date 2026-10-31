@@ -141,7 +141,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
             )}
 
-            {!isMaintenance && (
             <button
               onClick={() => handleNavClick('campus-map')}
               className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-colors text-left cursor-pointer ${
@@ -153,7 +152,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <MapPin className="w-4 h-4 shrink-0" />
               <span>Campus map</span>
             </button>
-            )}
 
             <button
               onClick={() => handleNavClick('notifications')}

@@ -192,7 +192,11 @@ export const NewComplaintView: React.FC<NewComplaintViewProps> = ({
                 placeholder="What happened? When did you first notice it? Add any details that may help..."
                 className="w-full bg-white border border-zinc-200 rounded-xl p-4 text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-black transition-colors leading-relaxed"
               />
-              <span className="block text-[11px] text-zinc-400 mt-1">Minimum 20 characters</span>
+              {description.trim().length < 20 && error.includes('20 characters') ? (
+                <p className="text-xs text-red-600 mt-1">Write at least 20 characters.</p>
+              ) : (
+                <span className="block text-[11px] text-zinc-400 mt-1">Minimum 20 characters</span>
+              )}
             </div>
 
             {/* Category */}

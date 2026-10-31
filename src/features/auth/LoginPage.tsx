@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Lock,
   Mail,
   User as UserIcon,
   Phone,
@@ -453,15 +452,9 @@ export const LoginPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <span className="text-zinc-300 hidden sm:inline-block">•</span>
             <span className="text-[11px] text-zinc-500 font-medium hidden md:inline-block">
-              Smart Maintenance Portal
+              Smart Complaint Maintenance Portal
             </span>
           </div>
-        </div>
-
-        {/* Center: System Domain Pill (like labs.ai in screenshot) */}
-        <div className="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 border border-zinc-200/90 text-[11px] font-mono text-zinc-600 shadow-2xs">
-          <Lock className="w-3 h-3 text-emerald-600" />
-          <span>maintenance.bup.edu.bd</span>
         </div>
 
         {/* Right Action: Helpline button */}
@@ -474,7 +467,7 @@ export const LoginPage: React.FC = () => {
           >
             <PhoneCall className="w-3.5 h-3.5 text-red-600" />
             <span className="hidden sm:inline">Emergency:</span>
-            <span className="font-mono text-[11px] font-bold">+8801769-028787</span>
+            <span className="font-mono text-[11px] font-bold">+8809666790799</span>
           </button>
         </div>
       </header>
