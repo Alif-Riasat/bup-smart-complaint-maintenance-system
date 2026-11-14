@@ -16,9 +16,10 @@ import {
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { AnalyticsVisuals } from './AnalyticsVisuals';
+import { AuthorityReports } from './AuthorityReports';
 
 export const AdminAnalyticsView: React.FC = () => {
-  const { complaints, categories, locations, maintenanceStaff } = useApp();
+  const { complaints, categories, locations, maintenanceStaff, currentUser } = useApp();
 
   const totalComplaints = complaints.length;
   const resolvedComplaints = complaints.filter(
@@ -103,7 +104,7 @@ export const AdminAnalyticsView: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="no-print flex items-center gap-2">
           <button
             onClick={handleExportCSV}
             className="px-3.5 py-2 rounded-xl bg-white hover:bg-zinc-50 text-zinc-700 border border-zinc-200 text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer shadow-2xs"
@@ -121,6 +122,13 @@ export const AdminAnalyticsView: React.FC = () => {
           </button>
         </div>
       </div>
+
+      <AuthorityReports
+        complaints={complaints}
+        staff={maintenanceStaff}
+        preparedBy={currentUser.name}
+        preparedId={currentUser.studentOrEmployeeId}
+      />
 
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">

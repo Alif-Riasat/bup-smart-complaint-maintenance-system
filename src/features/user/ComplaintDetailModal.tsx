@@ -92,8 +92,8 @@ export const ComplaintDetailModal: React.FC<ComplaintDetailModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-xs font-sans text-zinc-900 animate-fadeIn">
-      <div className="bg-white rounded-3xl w-full max-w-3xl overflow-hidden shadow-2xl border border-zinc-200/90 flex flex-col max-h-[92vh] relative">
+    <div className="complaint-overlay fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-xs font-sans text-zinc-900 animate-fadeIn">
+      <div className="complaint-sheet bg-white rounded-3xl w-full max-w-3xl overflow-hidden shadow-2xl border border-zinc-200/90 flex flex-col max-h-[92vh] relative">
         {/* Header Bar */}
         <div className="p-5 sm:p-6 border-b border-zinc-100 flex items-start justify-between bg-zinc-50/70 gap-4">
           <div className="min-w-0">
@@ -105,9 +105,9 @@ export const ComplaintDetailModal: React.FC<ComplaintDetailModalProps> = ({
               >
                 <span>{complaint.id}</span>
                 {copiedId ? (
-                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <Check className="no-print w-3.5 h-3.5 text-emerald-600" />
                 ) : (
-                  <Copy className="w-3.5 h-3.5 text-zinc-400" />
+                  <Copy className="no-print w-3.5 h-3.5 text-zinc-400" />
                 )}
               </button>
 
@@ -125,7 +125,7 @@ export const ComplaintDetailModal: React.FC<ComplaintDetailModalProps> = ({
             </h2>
           </div>
 
-          <div className="flex items-center gap-1.5 shrink-0">
+          <div className="no-print flex items-center gap-1.5 shrink-0">
             <button
               onClick={handlePrint}
               className="p-2 rounded-xl text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors cursor-pointer"
@@ -187,7 +187,7 @@ export const ComplaintDetailModal: React.FC<ComplaintDetailModalProps> = ({
                       >
                         {step.label}
                       </span>
-                      <span className="text-[10px] text-zinc-400 hidden sm:block mt-0.5 leading-none">
+                      <span className="text-[10px] text-zinc-400 hidden sm:block print:hidden mt-0.5 leading-none">
                         {step.desc}
                       </span>
                     </div>
@@ -239,8 +239,14 @@ export const ComplaintDetailModal: React.FC<ComplaintDetailModalProps> = ({
                 <span className="capitalize font-semibold text-zinc-800">{complaint.userType}</span>
                 <span className="flex items-center gap-1 text-zinc-500">
                   <Calendar className="w-3 h-3 text-zinc-400" />
-                  {complaint.submissionDate}
+                  Filed {complaint.submissionDate}
                 </span>
+                {complaint.issueFacedAt && (
+                  <span className="flex items-center gap-1 text-zinc-800 font-medium">
+                    <Clock className="w-3 h-3 text-zinc-400" />
+                    Faced {complaint.issueFacedAt.slice(0, 16)}
+                  </span>
+                )}
                 {complaint.userPhone && (
                   <span className="font-mono text-zinc-500">{complaint.userPhone}</span>
                 )}
@@ -345,7 +351,7 @@ export const ComplaintDetailModal: React.FC<ComplaintDetailModalProps> = ({
           )}
 
           {complaint.userId === currentUser.id && !['Resolved', 'Closed', 'Rejected'].includes(complaint.status) && (
-            <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-xs space-y-3">
+            <div className="no-print p-5 rounded-2xl bg-white border border-zinc-200 shadow-xs space-y-3">
               <h4 className="text-xs font-bold text-zinc-800 uppercase tracking-wider">Request a follow-up</h4>
               {complaint.canFollowUp ? (
                 <form
@@ -411,7 +417,7 @@ export const ComplaintDetailModal: React.FC<ComplaintDetailModalProps> = ({
                   </span>
                 </div>
               ) : (
-                <form noValidate onSubmit={handleFeedbackSubmit} className="space-y-3.5">
+                <form noValidate onSubmit={handleFeedbackSubmit} className="no-print space-y-3.5">
                   <p className="text-xs text-zinc-600">
                     How satisfied are you with the resolution of this issue?
                   </p>
@@ -489,7 +495,7 @@ export const ComplaintDetailModal: React.FC<ComplaintDetailModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="p-4 sm:px-6 border-t border-zinc-100 bg-zinc-50/70 flex items-center justify-between">
+        <div className="no-print p-4 sm:px-6 border-t border-zinc-100 bg-zinc-50/70 flex items-center justify-between">
           <div className="text-xs text-zinc-400">
             BUP Smart Maintenance System
           </div>

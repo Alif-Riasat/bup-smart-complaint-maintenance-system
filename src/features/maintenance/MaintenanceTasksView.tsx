@@ -163,6 +163,9 @@ export const MaintenanceTasksView: React.FC<MaintenanceTasksViewProps> = ({
 
                 <h3 className="font-bold text-zinc-900 text-sm">{t.title}</h3>
                 <p className="text-xs text-zinc-500 line-clamp-1">{t.description}</p>
+                {t.issueFacedAt && (
+                  <p className="text-[11px] text-zinc-600">Faced the issue: {t.issueFacedAt.slice(0, 16)}</p>
+                )}
                 {t.imageUrl && (
                   <img src={t.imageUrl} alt="Photo proof" loading="lazy" decoding="async" className="mt-2 h-16 w-16 rounded-lg object-cover border border-zinc-200" />
                 )}

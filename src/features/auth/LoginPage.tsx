@@ -1432,7 +1432,7 @@ export const LoginPage: React.FC = () => {
           <a href="https://bup.edu.bd/" target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-black">
             Bangladesh University of Professionals
           </a>
-          . Department of ICT, FST.
+          .
         </div>
         <div className="flex items-center gap-4">
           <button

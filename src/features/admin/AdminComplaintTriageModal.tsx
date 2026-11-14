@@ -111,6 +111,9 @@ export const AdminComplaintTriageModal: React.FC<AdminComplaintTriageModalProps>
             </div>
             <h3 className="text-sm font-bold text-zinc-900">{complaint.title}</h3>
             <p className="text-xs text-zinc-600 leading-relaxed">{complaint.description}</p>
+            {complaint.issueFacedAt && (
+              <p className="text-xs text-zinc-700">Faced the issue: <strong>{complaint.issueFacedAt.slice(0, 16)}</strong></p>
+            )}
             
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-500 pt-2 border-t border-zinc-200/70">
               <span className="flex items-center gap-1 text-zinc-800 font-semibold">

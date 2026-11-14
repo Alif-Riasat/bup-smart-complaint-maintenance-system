@@ -135,6 +135,7 @@ CREATE TABLE COMPLAINT (
     Description TEXT NOT NULL,
     Priority ENUM('Low', 'Normal', 'High', 'Urgent') NOT NULL DEFAULT 'Normal',
     Submission_Date DATETIME NOT NULL,
+    Issue_Faced_At DATETIME NULL,
     Current_Status ENUM('Pending', 'Assigned', 'In Progress', 'On Hold', 'Escalated', 'Resolved', 'Closed', 'Rejected') NOT NULL DEFAULT 'Pending',
     Image_URL VARCHAR(500) NULL,
     Video_URL VARCHAR(500) NULL,
@@ -386,8 +387,7 @@ INSERT INTO EMERGENCY_CONTACTS (Contact_ID_PK, Category, Name, Designation, Cont
 INSERT INTO COMPLAINT (Complaint_ID_PK, User_ID_FK, Category_ID_FK, Location_ID_FK, Title, Description, Priority, Submission_Date, Current_Status, Image_URL, Feedback_Rating, Feedback_Comment) VALUES
 ('CMP-2026-001', 'user-nusrat', 'cat-ac', 'loc-acad-1', 'Air conditioner not cooling in IoT Lab 402', 'Unit making loud rattling noise and not chilling room below 28C during class hours.', 'High', '2026-05-26 09:30:00', 'In Progress', 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=600', NULL, NULL),
 ('CMP-2026-002', 'user-saha', 'cat-ict', 'loc-acad-2', 'HDMI Projector flickering in Lecture Gallery 301', 'Audio crackles and display cuts to black every few minutes.', 'Normal', '2026-05-26 10:15:00', 'Resolved', 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=600', 5, 'HDMI port replaced promptly before lecture.'),
-('CMP-2026-003', 'user-nusrat', 'cat-elec', 'loc-fst-1', 'Power socket sparking near Workstation 08', 'Spark seen when plugging in laptop charger. Needs urgent inspection.', 'Urgent', '2026-05-26 11:00:00', 'Pending', 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600', NULL, NULL),
-('CMP-2026-004', 'user-saha', 'cat-water', 'loc-fbs-1', 'Water filter low pressure tap dripping', 'Constant leakage flooding basin area.', 'Low', '2026-05-25 14:00:00', 'Closed', NULL, 4, 'Washer replaced.');
+('CMP-2026-003', 'user-nusrat', 'cat-elec', 'loc-fst-1', 'Power socket sparking near Workstation 08', 'Spark seen when plugging in laptop charger. Needs urgent inspection.', 'Urgent', '2026-05-26 11:00:00', 'Pending', 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600', NULL, NULL);
 
 -- Insert Complaint Assignments
 INSERT INTO COMPLAINT_ASSIGNMENT (Assignment_ID_PK, Complaint_ID_FK, Staff_ID_FK, Assigned_Date, Assignment_Status, Assignment_Notes) VALUES

@@ -11,6 +11,12 @@ import {
 import { useApp } from '../../context/AppContext';
 import { ComplaintPriority } from '../../types/complaint';
 
+function localNow() {
+  const now = new Date();
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+}
+
 interface NewComplaintViewProps {
   onSuccess: (complaintId: string) => void;
   onCancel: () => void;
@@ -30,6 +36,7 @@ export const NewComplaintView: React.FC<NewComplaintViewProps> = ({
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [issueFacedAt, setIssueFacedAt] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [locationId, setLocationId] = useState(initialLoc);
   const [priority, setPriority] = useState<ComplaintPriority>('Normal');
@@ -83,6 +90,14 @@ export const NewComplaintView: React.FC<NewComplaintViewProps> = ({
       setError('Please enter at least 20 characters in the description.');
       return;
     }
+    if (!issueFacedAt) {
+      setError('Choose the date and time you faced the issue.');
+      return;
+    }
+    if (new Date(issueFacedAt).getTime() > Date.now() + 60 * 1000) {
+      setError('The time you faced the issue cannot be in the future.');
+      return;
+    }
     if (!categoryId) {
       setError('Please select a complaint category.');
       return;
@@ -105,6 +120,7 @@ export const NewComplaintView: React.FC<NewComplaintViewProps> = ({
         imageUrl: imageUrl || undefined,
         videoUrl: videoUrl || undefined,
         isEmergency,
+        issueFacedAt,
       });
       setIsSubmitting(false);
       onSuccess(created.id);
@@ -147,7 +163,7 @@ export const NewComplaintView: React.FC<NewComplaintViewProps> = ({
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} noValidate className="space-y-6">
         {/* Step 01: Issue details Card (Pixel-match of Image 2) */}
         <div className="p-6 sm:p-8 rounded-2xl bg-white border border-zinc-200/90 shadow-xs space-y-6">
           <div className="flex items-start gap-4">
@@ -196,6 +212,27 @@ export const NewComplaintView: React.FC<NewComplaintViewProps> = ({
                 <p className="text-xs text-red-600 mt-1">Write at least 20 characters.</p>
               ) : (
                 <span className="block text-[11px] text-zinc-400 mt-1">Minimum 20 characters</span>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-zinc-800 mb-1.5">
+                When did you face this issue?
+              </label>
+              <input
+                type="datetime-local"
+                required
+                value={issueFacedAt}
+                max={localNow()}
+                onChange={(e) => setIssueFacedAt(e.target.value)}
+                className="w-full bg-white border border-zinc-200 rounded-xl px-4 py-3 text-xs text-zinc-900 focus:outline-none focus:border-black transition-colors"
+              />
+              {!issueFacedAt && error.includes('faced the issue') ? (
+                <p className="text-xs text-red-600 mt-1">Choose the date and time you faced the issue.</p>
+              ) : error.includes('cannot be in the future') ? (
+                <p className="text-xs text-red-600 mt-1">The time you faced the issue cannot be in the future.</p>
+              ) : (
+                <span className="block text-[11px] text-zinc-400 mt-1">The date and time you first noticed the problem.</span>
               )}
             </div>
 

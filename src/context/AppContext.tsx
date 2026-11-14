@@ -87,6 +87,7 @@ interface AppContextType {
     imageUrl?: string;
     videoUrl?: string;
     isEmergency?: boolean;
+    issueFacedAt?: string;
   }) => Promise<Complaint>;
   assignComplaint: (complaintId: string, staffId: string, priority?: ComplaintPriority, notes?: string) => Promise<void>;
   updateStaffProgress: (

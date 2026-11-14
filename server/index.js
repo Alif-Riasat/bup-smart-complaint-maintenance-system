@@ -120,6 +120,20 @@ function nowSql() {
   return formatSql(new Date());
 }
 
+function issueFacedSql(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return { error: 'Choose the date and time you faced the issue.' };
+  const match = raw.match(/^(\d{4}-\d{2}-\d{2})[T ](\d{2}:\d{2})(?::(\d{2}))?/);
+  if (!match) return { error: 'Choose a valid date and time for when you faced the issue.' };
+  const sql = `${match[1]} ${match[2]}:${match[3] || '00'}`;
+  const when = new Date(`${match[1]}T${match[2]}:${match[3] || '00'}`);
+  if (Number.isNaN(when.getTime())) return { error: 'Choose a valid date and time for when you faced the issue.' };
+  if (when.getTime() > Date.now() + 60 * 1000) {
+    return { error: 'The time you faced the issue cannot be in the future.' };
+  }
+  return { sql };
+}
+
 function addHours(sqlValue, hours) {
   const date = parseSql(sqlValue);
   date.setTime(date.getTime() + hours * 3600000);
@@ -189,6 +203,7 @@ function mapComplaint(row, viewer) {
     userType: row.User_Type,
     studentOrEmployeeId: row.Student_Or_Employee_ID,
     submissionDate: row.Submission_Date,
+    issueFacedAt: row.Issue_Faced_At || undefined,
     submitterRedFlagged: !!row.Is_Flagged_Spammer,
     assignedStaffId: row.Staff_ID_PK || undefined,
     assignedStaffName: row.Staff_Name || undefined,
@@ -825,6 +840,8 @@ app.post('/api/complaints', auth, async (req, res) => {
     if (!categoryId) return res.status(400).json({ message: 'Select a complaint category.' });
     if (!locationId) return res.status(400).json({ message: 'Select the campus location.' });
     if (!SLA_HOURS[priority]) return res.status(400).json({ message: 'Choose a priority of Low, Normal, High, or Urgent.' });
+    const faced = issueFacedSql(req.body.issueFacedAt);
+    if (faced.error) return res.status(400).json({ message: faced.error });
 
     const [categoryRows] = await pool.query('SELECT Category_ID_PK FROM COMPLAINT_CATEGORY WHERE Category_ID_PK = ?', [categoryId]);
     if (!categoryRows.length) return res.status(400).json({ message: 'That category is not available.' });
@@ -901,23 +918,37 @@ app.post('/api/complaints', auth, async (req, res) => {
         });
       }
     }
-    const [countRows] = await pool.query('SELECT COUNT(*) AS total FROM COMPLAINT');
-    const complaintId = `CMP-${new Date().getFullYear()}-${String(countRows[0].total + 1).padStart(3, '0')}`;
+    const year = new Date().getFullYear();
     const stamp = nowSql();
-    const acknowledgement = `Complaint ${complaintId} is registered. Keep this ID. The acknowledgement is in your portal notifications.`;
     const slaDue = addHours(stamp, SLA_HOURS[priority]);
-
-    await pool.query(
-      `INSERT INTO COMPLAINT (
-        Complaint_ID_PK, User_ID_FK, Category_ID_FK, Location_ID_FK, Title, Description, Priority,
-        Submission_Date, Current_Status, Image_URL, Video_URL, Attachment_Type, Is_Emergency,
-        Sla_Due_At, Acknowledgement_Message
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?, ?, ?, ?, ?, ?)`,
-      [
-        complaintId, req.user.id, categoryId, locationId, title, description, priority,
-        stamp, imageUrl, videoUrl, attachmentType, isEmergency, slaDue, acknowledgement,
-      ]
-    );
+    let complaintId = '';
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const [idRows] = await pool.query(
+        `SELECT COALESCE(MAX(CAST(SUBSTRING_INDEX(Complaint_ID_PK, '-', -1) AS UNSIGNED)), 0) AS lastNo
+         FROM COMPLAINT
+         WHERE Complaint_ID_PK LIKE ?`,
+        [`CMP-${year}-%`]
+      );
+      complaintId = `CMP-${year}-${String(Number(idRows[0].lastNo) + 1).padStart(3, '0')}`;
+      const acknowledgement = `Complaint ${complaintId} is registered. Keep this ID. The acknowledgement is in your portal notifications.`;
+      try {
+        await pool.query(
+          `INSERT INTO COMPLAINT (
+            Complaint_ID_PK, User_ID_FK, Category_ID_FK, Location_ID_FK, Title, Description, Priority,
+            Submission_Date, Issue_Faced_At, Current_Status, Image_URL, Video_URL, Attachment_Type, Is_Emergency,
+            Sla_Due_At, Acknowledgement_Message
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?, ?, ?, ?, ?, ?)`,
+          [
+            complaintId, req.user.id, categoryId, locationId, title, description, priority,
+            stamp, faced.sql, imageUrl, videoUrl, attachmentType, isEmergency, slaDue, acknowledgement,
+          ]
+        );
+        break;
+      } catch (error) {
+        if (error.code !== 'ER_DUP_ENTRY' || attempt === 4) throw error;
+      }
+    }
+    const acknowledgement = `Complaint ${complaintId} is registered. Keep this ID. The acknowledgement is in your portal notifications.`;
     await insertHistory(complaintId, 'Pending', req.user, 'Complaint registered and acknowledged.');
 
     const ownerChannels = channelsForUser();
@@ -1596,6 +1627,10 @@ async function boot() {
     const [questionColumn] = await pool.query("SHOW COLUMNS FROM USER LIKE 'Security_Question'");
     if (!questionColumn.length) {
       await pool.query('ALTER TABLE USER ADD COLUMN Security_Question VARCHAR(255) NULL, ADD COLUMN Security_Answer VARCHAR(255) NULL');
+    }
+    const [facedColumn] = await pool.query("SHOW COLUMNS FROM COMPLAINT LIKE 'Issue_Faced_At'");
+    if (!facedColumn.length) {
+      await pool.query('ALTER TABLE COMPLAINT ADD COLUMN Issue_Faced_At DATETIME NULL AFTER Submission_Date');
     }
     const [handoffColumn] = await pool.query("SHOW COLUMNS FROM COMPLAINT_ASSIGNMENT LIKE 'Handoff_Kind'");
     if (!handoffColumn.length) {

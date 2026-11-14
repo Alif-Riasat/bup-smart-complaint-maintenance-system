@@ -52,3 +52,64 @@
 .animate-fadeIn {
   animation: fadeIn 0.2s ease-out forwards;
 }
+
+@media print {
+  @page {
+    margin: 12mm;
+  }
+
+  body {
+    background: #fff !important;
+  }
+
+  .app-shell aside,
+  .app-shell header,
+  .app-shell footer,
+  .no-print {
+    display: none !important;
+  }
+
+  .app-shell,
+  .app-shell main {
+    background: #fff !important;
+  }
+
+  .app-shell main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  body:has(.complaint-sheet) .app-shell {
+    display: block !important;
+  }
+
+  body:has(.complaint-sheet) .app-shell > :not(.complaint-overlay) {
+    display: none !important;
+  }
+
+  .complaint-overlay {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    overflow: visible !important;
+    background: #fff !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    animation: none !important;
+  }
+
+  .complaint-sheet,
+  .complaint-sheet .overflow-y-auto {
+    max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  .complaint-sheet {
+    width: 100% !important;
+    max-width: none !important;
+    border: 0 !important;
+  }
+}

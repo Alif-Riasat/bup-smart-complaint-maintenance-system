@@ -120,7 +120,7 @@ function AppContent() {
     : (route?.title || 'Overview');
 
   return (
-    <div className="min-h-screen bg-[#faf8f5] flex font-sans text-zinc-900 selection:bg-black selection:text-white">
+    <div className="app-shell min-h-screen bg-[#faf8f5] flex font-sans text-zinc-900 selection:bg-black selection:text-white">
       <Sidebar
         currentNav={currentNav}
         onNavigate={goNav}

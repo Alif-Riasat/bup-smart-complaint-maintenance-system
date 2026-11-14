@@ -102,6 +102,7 @@ export interface Complaint {
   userType: string;
   studentOrEmployeeId: string;
   submissionDate: string;
+  issueFacedAt?: string;
   submitterRedFlagged?: boolean;
   
   // Assignment details
